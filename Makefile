@@ -7,4 +7,4 @@ ifeq ($(OS),Darwin)
 endif
 
 docker:
-	docker run -it -v $(CURRENT_PATH):/app -w /app jkutkut/docker4rust
+	docker run -it -v $(CURRENT_PATH):/app -w /app -v rust_cargo_registy:/root/.cargo/registry jkutkut/docker4rust

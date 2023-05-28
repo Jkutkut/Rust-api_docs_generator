@@ -1,3 +1,46 @@
+use serde_derive::Deserialize;
+
+#[derive(Deserialize, Debug)]
+struct Api {
+    title: String,
+    description: String,
+}
+
 fn main() {
-    println!("Hello, world!");
+    let args = std::env::args().collect::<Vec<_>>();
+    let (file_input, file_output) = match args.len() {
+        2 => {
+            (args[1].clone(), args[1].replace(".json", ".md"))
+        }
+        3 => (args[1].clone(), args[2].clone()),
+        _ => {
+            println!("Usage: {} <file_input> <file_output>", args[0]);
+            return;
+        }
+    };
+
+    let input = match std::fs::read_to_string(&file_input) {
+        Ok(input) => input,
+        Err(err) => {
+            eprintln!("Error reading file {}: {}", file_input, err);
+            return;
+        }
+    };
+
+    println!("Generating docs for {} into {}", file_input, file_output);
+
+    let data = match serde_json::from_str::<Api>(&input) {
+        Ok(data) => data,
+        Err(err) => {
+            eprintln!("Error parsing file {}: {}", file_input, err);
+            return;
+        }
+    };
+
+    let content = format!("{:?}\n\n{}", data, input);
+
+    match std::fs::write(&file_output, content) {
+        Ok(_) => println!("Done"),
+        Err(err) => eprintln!("Error writing file {}: {}", file_output, err),
+    }
 }
