@@ -1,0 +1,55 @@
+{
+    "name": "EatUp Server API",
+    "description": "Here you will find the documentation of the server microservice of the EatUp project",
+    "apis": [
+        {
+            "title": "Test",
+            "description": "Description for /api/v1",
+            "route": "/api/v1",
+            "endpoints": [
+                {
+                    "method": "GET",
+                    "route": "/test",
+                    "description": "Test endpoint",
+                    "parameters": null,
+                    "filters": null,
+                    "examples": [
+
+                    ]
+                },
+                {
+                    "method": "GET",
+                    "route": "/test/:id",
+                    "description": "Test endpoint",
+                    "parameters": [
+                        {
+                            "name": "id",
+                            "description": "The id of the test",
+                            "example": "1234"
+                        }
+                    ],
+                    "filters": null,
+                    "examples": [
+
+                    ]
+                },
+                {
+                    "method": "GET",
+                    "route": "/test/notid",
+                    "description": "Test endpoint",
+                    "parameters": [
+                        {
+                            "name": "id",
+                            "description": "The id of the test",
+                            "example": "1234"
+                        }
+                    ],
+                    "filters": null,
+                    "examples": [
+
+                    ]
+                }
+            ]
+        }
+    ]
+}

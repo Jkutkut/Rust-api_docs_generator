@@ -8,7 +8,7 @@
 #### Creating new/overwriting existing stubs & proxy configs
 
 <details>
- <summary><b>POST</b> <code><b>/</b></code> <i>overwrites all in-memory stub and/or proxy-config</i>
+ <summary><b>POST</b> <code><b>/</b></code> <i>overwrites all in-memory stub and/or proxy-config</i></summary>
 
 ##### Parameters
 
