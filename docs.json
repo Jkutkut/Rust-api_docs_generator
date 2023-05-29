@@ -12,9 +12,26 @@
                     "route": "/test",
                     "description": "Test endpoint",
                     "parameters": null,
-                    "filters": null,
+                    "filters": [
+                        {
+                            "name": "size",
+                            "description": "The size of the test",
+                            "example": "42"
+                        }
+                    ],
                     "examples": [
-
+                        {
+                            "description": "This is an example with the test",
+                            "endpoint": "/api/v1/test?size=42",
+                            "data": null,
+                            "response_description": "This is the result",
+                            "response_code": 200,
+                            "response_body": [
+                                "{",
+                                "  \"message\": \"Hello World\"",
+                                "}"
+                            ]
+                        }
                     ]
                 },
                 {
@@ -30,7 +47,13 @@
                     ],
                     "filters": null,
                     "examples": [
-
+                        {
+                            "description": "This is an example with the test",
+                            "endpoint": "/api/v1/test?size=42",
+                            "data": null,
+                            "response_description": "This is the result",
+                            "response_code": 200
+                        }
                     ]
                 },
                 {

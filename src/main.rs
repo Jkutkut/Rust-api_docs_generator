@@ -49,42 +49,38 @@ mod endpoint {
         pub description: String,
         pub parameters: Option<Vec<Parameter>>,
         pub filters: Option<Vec<Filter>>,
-        pub examples: Vec<Example>,
+        pub examples: Vec<EndpointExample>,
     }
 
     #[derive(Deserialize, Debug)]
     pub struct Parameter {
         pub name: String,
         pub description: String,
-        pub example: Example,
+        pub example: String,
     }
 
     #[derive(Deserialize, Debug)]
     pub struct Filter {
         pub name: String,
         pub description: String,
-        pub example: Example,
+        pub example: String,
     }
 
-    #[derive(Deserialize, Debug)]
-    #[serde(untagged)]
-    pub enum Example {
-        Simple(String),
-        Complex(ComplexExample),
-    }
+    // #[derive(Deserialize, Debug)]
+    // #[serde(untagged)]
+    // pub enum Example {
+    //     Simple(String),
+    //     Complex(ComplexExample),
+    // }
 
     #[derive(Deserialize, Debug)]
-    pub struct ComplexExample {
+    pub struct EndpointExample {
         pub description: String,
-        pub code: Code,
-        pub result_description: String,
-        pub result: Code,
-    }
-
-    #[derive(Deserialize, Debug)]
-    pub enum Code {
-        CodeString(String),
-        CodeBlock(Vec<String>),
+        pub endpoint: String,
+        pub data: Option<Vec<String>>,
+        pub response_description: String,
+        pub response_code: u16,
+        pub response_body: Option<Vec<String>>,
     }
 }
 use endpoint::*;
@@ -96,10 +92,10 @@ mod parse {
     ) -> String {
         // 🚀 🥅 📬 🔧 📡
         let mut r = String::new();
-        r = r + &format!("## {}\n\n", collection.name);
+        r = r + &format!("# {}\n\n", collection.name);
         r = r + &format!("{}\n\n", collection.description);
         for api in collection.apis {
-            r = r + &format!("### {}: `{}`\n\n", api.title, api.route);
+            r = r + &format!("## {}: `{}`\n\n", api.title, api.route);
             r = r + &format!("{}\n\n", api.description);
             for endpoint in api.endpoints {
                 r = r + &format!("<details><summary> \
@@ -109,7 +105,7 @@ mod parse {
                 r = r + &format!("{}\n\n", endpoint.description);
 
                 if let Some(parameters) = endpoint.parameters {
-                    r = r + &format!("#### Parameters\n\n");
+                    r = r + &format!("### Parameters\n\n");
                     r = r + &format!("| Name | Example | Description |\n");
                     r = r + &format!("| ---- | --- | --- |\n");
                     for param in parameters {
@@ -118,25 +114,71 @@ mod parse {
                                 param.name, endpoint.route
                             );
                         }
-                        let example = match param.example {
-                            Example::Simple(example) => example,
-                            Example::Complex(_) => {
-                                eprintln!("Warning: complex example for parameter {}. Removing example",
-                                    param.name
-                                );
-                                "".to_string()
-                            }
-                        };
-                        r = r + &format!("| `{}` | {} | `{}` |\n",
-                            param.name, example, param.description
+                        r = r + &format!("| `{}` | `.../{}={}/...` | {} |\n",
+                            param.name, param.name, param.example, param.description
                         );
                     }
                     r = r + &format!("\n\n");
                 }
 
-                // TODO filters
+                if let Some(filters) = endpoint.filters {
+                    r = r + &format!("### Filters\n\n");
+                    r = r + &format!("| Name | Example | Description |\n");
+                    r = r + &format!("| ---- | --- | --- |\n");
+                    for filter in filters {
+                        r = r + &format!("| `{}` | `?...&{}...` | {} |\n",
+                            filter.name, filter.example, filter.description
+                        );
+                    }
+                    r = r + &format!("\n\n");
+                }
 
                 // TODO examples
+                match endpoint.examples.len() {
+                    0 => eprintln!(
+                        "Warning: no examples found for endpoint {}",
+                            endpoint.route
+                    ),
+                    _ => {
+                        r = r + &format!("<details><summary>Examples</summary>\n\n");
+                        // for example in endpoint.examples {
+                        for (i, example) in endpoint.examples.iter().enumerate() {
+                            r = r + &format!("### {}\n\n", i + 1);
+                            r = r + &format!("{}\n\n", example.description);
+                            r = r + &format!("```javascript\n");
+                            r = r + &format!("fetch(\"{}{}\", {{\n",
+                                api.route, example.endpoint
+                            );
+                            r = r + &format!("    method: \"{}\",\n",
+                                endpoint.method
+                            );
+                            if let Some(data) = &example.data {
+                                r = r + &format!("    headers: {{ \"Content-Type\": \"application/json\" }},\n");
+                                r = r + &format!("    body: JSON.stringify({}),\n",
+                                    data.join(", ")
+                                );
+                            }
+                            r = r + &format!("}})\n");
+                            r = r + &format!(".then(response => response.json())\n");
+                            r = r + &format!(".then(json => console.log(json));\n");
+                            r = r + &format!("```\n\n");
+
+                            r = r + &format!("Response:\n\n");
+                            r = r + &format!("{}\n\n", example.response_description);
+                            r = r + &format!("```json\n");
+                            r = r + &format!("{}\n\n", example.response_code);
+                            if let Some(body) = &example.response_body {
+                                r = r + &format!("{}\n", body.join("\n"));
+                            }
+                            else {
+                                r = r + "No response body.\n"
+                            }
+                            r = r + &format!("```\n\n");
+                            
+                        }
+                        r = r + &format!("</details>\n\n");
+                    }
+                }
 
                 r = r + &format!("</details>\n\n");
             }
