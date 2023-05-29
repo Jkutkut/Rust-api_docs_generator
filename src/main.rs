@@ -1,4 +1,4 @@
-mod endpoint {
+mod model {
     use serde_derive::Deserialize;
 
     #[derive(Deserialize, Debug)]
@@ -78,6 +78,7 @@ mod endpoint {
     }
 
     #[derive(Deserialize, Debug)]
+    #[serde(untagged)]
     pub enum Legend {
         Definition(LegendDefinition),
         Code(Vec<LegendCode>)
@@ -96,7 +97,7 @@ mod endpoint {
         pub description: String
     }
 }
-use endpoint::*;
+use model::*;
 
 mod parse {
     use super::*;
@@ -151,7 +152,6 @@ mod parse {
                     ),
                     _ => {
                         r = r + &format!("<details><summary>Examples</summary>\n\n");
-                        // for example in endpoint.examples {
                         for (i, example) in endpoint.examples.iter().enumerate() {
                             r = r + &format!("### {}\n\n", i + 1);
                             r = r + &format!("{}\n\n", example.description);
@@ -189,13 +189,41 @@ mod parse {
                         r = r + &format!("</details>\n\n");
                     }
                 }
-
-                // TODO legend 🔧
-
                 r = r + &format!("</details>\n\n");
             }
         }
-        // TODO add signature
+
+        if let Some(legends) = collection.legend {
+            r = r + &format!("<details><summary><h2>🔧 Legend</h2></summary>\n\n");
+            for legend in legends {
+                match legend {
+                    Legend::Definition(legend) => {
+                        r = r + &format!("## Legend\n\n");
+                        r = r + &format!("{}\n\n", legend.description);
+                        r = r + &format!("| Element | Meaning |\n");
+                        r = r + &format!("| ------- | ------- |\n");
+                        for (element, meaning) in legend.legend {
+                            r = r + &format!("| `{}` | {} |\n", element, meaning);
+                        }
+                        r = r + &format!("\n\n");
+                    },
+                    Legend::Code(legend) => {
+                        r = r + &format!("## API Codes\n\n");
+                        r = r + &format!("| Code | Meaning | Description |\n");
+                        r = r + &format!("| ---- | ------- | ----------- |\n");
+                        for code in legend {
+                            r = r + &format!("| `{}` | *{}* | {} |\n",
+                                code.code, code.meaning, code.description
+                            );
+                        }
+                        r = r + &format!("\n\n");
+                    }
+                }
+            }
+            r = r + &format!("</details>\n\n");
+        }
+
+        r = r + &format!("Made with ❤️ using [api_docs_generator](https://github.com/Jkutkut/rust-api_docs_generator).\n");
         r
     }
 }

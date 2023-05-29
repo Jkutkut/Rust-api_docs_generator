@@ -74,5 +74,19 @@
                 }
             ]
         }
+    ],
+    "legend": [
+        {
+            "description": "This are the meanings of the symbols used in this document",
+            "legend": [
+                [":session_id", "The id of the session"],
+                [":table_id", "The id of the table"],
+                ["boolean", "A boolean value. It must be `true` or `false`"],
+                ["XXXXXX", "Generic-different from each other values"],
+                ["YYYYYY", "Generic-different from each other values"],
+                ["ZZZZZZ", "Generic-different from each other values"],
+                ["...", "More parameters can be added to the request"]
+            ]
+        }
     ]
 }
