@@ -6,6 +6,7 @@ mod endpoint {
         pub name: String,
         pub description: String,
         pub apis: Vec<Api>,
+        pub legend: Option<Vec<Legend>>,
     }
 
     #[derive(Deserialize, Debug)]
@@ -66,13 +67,6 @@ mod endpoint {
         pub example: String,
     }
 
-    // #[derive(Deserialize, Debug)]
-    // #[serde(untagged)]
-    // pub enum Example {
-    //     Simple(String),
-    //     Complex(ComplexExample),
-    // }
-
     #[derive(Deserialize, Debug)]
     pub struct EndpointExample {
         pub description: String,
@@ -82,6 +76,25 @@ mod endpoint {
         pub response_code: u16,
         pub response_body: Option<Vec<String>>,
     }
+
+    #[derive(Deserialize, Debug)]
+    pub enum Legend {
+        Definition(LegendDefinition),
+        Code(Vec<LegendCode>)
+    }
+
+    #[derive(Deserialize, Debug)]
+    pub struct LegendDefinition {
+        pub description: String,
+        pub legend: Vec<(String, String)>
+    }
+
+    #[derive(Deserialize, Debug)]
+    pub struct LegendCode {
+        pub code: String,
+        pub meaning: String,
+        pub description: String
+    }
 }
 use endpoint::*;
 
@@ -90,12 +103,11 @@ mod parse {
     pub fn markdown(
         collection: ApiCollection
     ) -> String {
-        // 🚀 🥅 📬 🔧 📡
         let mut r = String::new();
-        r = r + &format!("# {}\n\n", collection.name);
+        r = r + &format!("# 🚀 {}\n\n", collection.name);
         r = r + &format!("{}\n\n", collection.description);
         for api in collection.apis {
-            r = r + &format!("## {}: `{}`\n\n", api.title, api.route);
+            r = r + &format!("## 📡 {}: `{}`\n\n", api.title, api.route);
             r = r + &format!("{}\n\n", api.description);
             for endpoint in api.endpoints {
                 r = r + &format!("<details><summary> \
@@ -132,8 +144,6 @@ mod parse {
                     }
                     r = r + &format!("\n\n");
                 }
-
-                // TODO examples
                 match endpoint.examples.len() {
                     0 => eprintln!(
                         "Warning: no examples found for endpoint {}",
@@ -180,9 +190,12 @@ mod parse {
                     }
                 }
 
+                // TODO legend 🔧
+
                 r = r + &format!("</details>\n\n");
             }
         }
+        // TODO add signature
         r
     }
 }
