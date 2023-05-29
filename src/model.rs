@@ -91,7 +91,7 @@ pub struct LegendDefinition {
 
 #[derive(Deserialize, Debug)]
 pub struct LegendCode {
-    pub code: String,
+    pub code: u16,
     pub meaning: String,
     pub description: String
 }
