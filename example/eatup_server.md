@@ -720,4 +720,4 @@ This are the meanings of the symbols used in this document
 
 <br/>
 
-Made with ❤️ using [api_docs_generator](https://github.com/Jkutkut/rust-api_docs_generator) v0.6.0.
+Made with ❤️ using [api_docs_generator](https://github.com/Jkutkut/rust-api_docs_generator) v0.7.0.
